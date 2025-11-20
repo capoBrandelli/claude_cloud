@@ -1,0 +1,256 @@
+# Backtesting Configuration
+
+# Portfolio settings
+portfolio:
+  initial_capital: 100000
+  currency: USD
+  leverage: 1.0  # No leverage by default
+
+# Position sizing
+position_sizing:
+  method: fixed_percent  # fixed_percent, kelly, volatility_target, equal_weight, risk_parity
+
+  # Fixed percent of capital per trade
+  fixed_percent:
+    risk_per_trade: 0.02  # 2% risk per trade
+    max_position_size: 0.1  # 10% max position size
+
+  # Kelly criterion
+  kelly:
+    fraction: 0.5  # Half Kelly for safety
+    max_position_size: 0.15
+
+  # Volatility targeting
+  volatility_target:
+    target_volatility: 0.15  # 15% annualized volatility
+    lookback_period: 20
+
+  # Equal weight
+  equal_weight:
+    max_positions: 10
+
+  # Risk parity
+  risk_parity:
+    lookback_period: 60
+    target_risk: 0.1
+
+# Risk management
+risk_management:
+  # Position limits
+  max_positions: 10
+  max_position_size: 0.2  # 20% of portfolio
+
+  # Portfolio limits
+  max_portfolio_risk: 0.20  # 20% max drawdown before stopping
+  max_daily_loss: 0.05  # 5% max daily loss
+
+  # Stop loss and take profit
+  stop_loss:
+    enabled: true
+    type: percent  # percent, atr, fixed
+    value: 0.02  # 2% stop loss
+
+  take_profit:
+    enabled: true
+    type: percent
+    value: 0.04  # 4% take profit
+
+  # Trailing stop
+  trailing_stop:
+    enabled: true
+    type: percent
+    value: 0.015  # 1.5% trailing stop
+    activation_profit: 0.02  # Activate after 2% profit
+
+  # Time-based exits
+  max_holding_period: 20  # Maximum bars to hold position
+
+# Entry signals
+entry_signals:
+  # Prediction confidence threshold
+  min_confidence: 0.6  # Minimum probability for trade entry
+
+  # Signal confirmation
+  require_confirmation: true
+  confirmation_bars: 2  # Wait for N bars to confirm
+
+  # Filter signals based on market conditions
+  filters:
+    # Trend filter
+    trend_filter:
+      enabled: true
+      indicator: ema
+      period: 50
+
+    # Volatility filter
+    volatility_filter:
+      enabled: true
+      min_atr: 0.5  # Minimum ATR for entry
+      max_atr: 5.0  # Maximum ATR for entry
+
+    # Volume filter
+    volume_filter:
+      enabled: true
+      min_volume_ratio: 0.8  # Minimum relative volume
+
+# Exit signals
+exit_signals:
+  # Exit on opposite signal
+  exit_on_opposite_signal: true
+
+  # Exit on low confidence
+  exit_on_low_confidence:
+    enabled: true
+    threshold: 0.4
+
+  # Exit on target profit
+  profit_target:
+    enabled: true
+    target: 0.05  # 5% profit target
+
+# Transaction costs
+transaction_costs:
+  # Commission
+  commission:
+    type: percent  # percent, fixed
+    value: 0.001  # 0.1% commission
+
+  # Slippage
+  slippage:
+    type: percent
+    value: 0.0005  # 0.05% slippage
+    model: fixed  # fixed, volume_based, volatility_based
+
+  # Spread (for forex/crypto)
+  spread:
+    enabled: true
+    value: 0.0002  # 0.02% spread
+
+# Rebalancing
+rebalancing:
+  enabled: true
+  frequency: daily  # daily, weekly, monthly
+  method: threshold  # calendar, threshold
+  threshold: 0.05  # Rebalance if allocation drifts by 5%
+
+# Order execution
+order_execution:
+  # Order type
+  order_type: market  # market, limit
+
+  # Limit order settings
+  limit_order:
+    price_offset: 0.001  # 0.1% offset from current price
+    timeout: 5  # Cancel after N bars if not filled
+
+  # Partial fills
+  allow_partial_fills: false
+
+  # Fill probability model
+  fill_model: immediate  # immediate, realistic
+
+# Performance metrics
+performance_metrics:
+  # Returns
+  - total_return
+  - annualized_return
+  - cumulative_return
+
+  # Risk-adjusted returns
+  - sharpe_ratio
+  - sortino_ratio
+  - calmar_ratio
+  - omega_ratio
+
+  # Risk metrics
+  - max_drawdown
+  - max_drawdown_duration
+  - volatility
+  - downside_deviation
+  - var_95  # Value at Risk (95%)
+  - cvar_95  # Conditional Value at Risk (95%)
+
+  # Trade statistics
+  - total_trades
+  - win_rate
+  - profit_factor
+  - avg_win
+  - avg_loss
+  - avg_trade
+  - largest_win
+  - largest_loss
+  - avg_holding_period
+
+  # Consistency metrics
+  - win_streak
+  - loss_streak
+  - monthly_returns
+  - hit_ratio
+  - expectancy
+
+  # Exposure
+  - market_exposure
+  - avg_positions
+
+# Benchmark comparison
+benchmark:
+  enabled: true
+  symbols:
+    - SPY  # S&P 500
+  metrics:
+    - alpha
+    - beta
+    - correlation
+    - tracking_error
+    - information_ratio
+
+# Reporting
+reporting:
+  # Generate reports
+  generate_html_report: true
+  generate_pdf_report: false
+  generate_csv: true
+
+  # Plots to include
+  plots:
+    - equity_curve
+    - drawdown_curve
+    - monthly_returns
+    - returns_distribution
+    - rolling_sharpe
+    - rolling_volatility
+    - trade_analysis
+    - position_sizes
+    - win_loss_distribution
+
+  # Save trades
+  save_trades: true
+  trades_file: results/backtests/trades.csv
+
+  # Save daily performance
+  save_daily_performance: true
+  daily_file: results/backtests/daily_performance.csv
+
+# Monte Carlo simulation
+monte_carlo:
+  enabled: false
+  n_simulations: 1000
+  method: bootstrap  # bootstrap, parametric
+  confidence_levels: [0.05, 0.25, 0.50, 0.75, 0.95]
+
+# Walk-forward analysis
+walk_forward:
+  enabled: true
+  train_period: 252  # Trading days
+  test_period: 63  # Trading days
+  anchored: false  # Use expanding window if true
+
+# Optimization
+optimization:
+  enabled: false
+  method: grid_search  # grid_search, genetic_algorithm
+  objective: sharpe_ratio
+  parameters:
+    stop_loss: [0.01, 0.02, 0.03]
+    take_profit: [0.03, 0.04, 0.05]
+    min_confidence: [0.5, 0.6, 0.7]

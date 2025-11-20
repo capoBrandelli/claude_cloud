@@ -46,3 +46,20 @@ htmlcov/
 # Example outputs
 example.db
 test.db
+
+# TradeAI specific
+.env
+data/raw/
+data/processed/
+data/cache/
+models/checkpoints/
+models/trained/
+results/experiments/
+results/backtests/
+results/reports/
+logs/
+*.parquet
+*.h5
+*.pkl
+*.joblib
+mlruns/

@@ -1,0 +1,291 @@
+# Feature Engineering Configuration
+
+# Technical Indicators
+indicators:
+  # Momentum Indicators
+  momentum:
+    rsi:
+      enabled: true
+      name: "Relative Strength Index"
+      periods: [14, 21]
+      parameters:
+        overbought: 70
+        oversold: 30
+
+    macd:
+      enabled: true
+      name: "Moving Average Convergence Divergence"
+      parameters:
+        fast_period: 12
+        slow_period: 26
+        signal_period: 9
+
+    stochastic:
+      enabled: true
+      name: "Stochastic Oscillator"
+      parameters:
+        k_period: 14
+        d_period: 3
+        smooth_k: 3
+        overbought: 80
+        oversold: 20
+
+    roc:
+      enabled: true
+      name: "Rate of Change"
+      periods: [9, 12, 25]
+
+    williams_r:
+      enabled: true
+      name: "Williams %R"
+      periods: [14]
+      parameters:
+        overbought: -20
+        oversold: -80
+
+    cci:
+      enabled: true
+      name: "Commodity Channel Index"
+      periods: [20]
+      parameters:
+        overbought: 100
+        oversold: -100
+
+  # Trend Indicators
+  trend:
+    sma:
+      enabled: true
+      name: "Simple Moving Average"
+      periods: [10, 20, 50, 100, 200]
+
+    ema:
+      enabled: true
+      name: "Exponential Moving Average"
+      periods: [9, 12, 21, 26, 55, 100]
+
+    wma:
+      enabled: true
+      name: "Weighted Moving Average"
+      periods: [10, 20, 50]
+
+    adx:
+      enabled: true
+      name: "Average Directional Index"
+      period: 14
+      parameters:
+        trend_threshold: 25
+
+    ichimoku:
+      enabled: true
+      name: "Ichimoku Cloud"
+      parameters:
+        tenkan_period: 9
+        kijun_period: 26
+        senkou_span_b_period: 52
+        displacement: 26
+
+    supertrend:
+      enabled: true
+      name: "SuperTrend"
+      parameters:
+        period: 10
+        multiplier: 3.0
+
+  # Volatility Indicators
+  volatility:
+    bollinger_bands:
+      enabled: true
+      name: "Bollinger Bands"
+      period: 20
+      std_dev: 2.0
+
+    atr:
+      enabled: true
+      name: "Average True Range"
+      periods: [14, 21]
+
+    keltner_channels:
+      enabled: true
+      name: "Keltner Channels"
+      parameters:
+        ema_period: 20
+        atr_period: 10
+        multiplier: 2.0
+
+    donchian_channels:
+      enabled: true
+      name: "Donchian Channels"
+      period: 20
+
+    historical_volatility:
+      enabled: true
+      name: "Historical Volatility"
+      periods: [10, 20, 30]
+
+  # Volume Indicators
+  volume:
+    obv:
+      enabled: true
+      name: "On-Balance Volume"
+
+    vwap:
+      enabled: true
+      name: "Volume Weighted Average Price"
+
+    mfi:
+      enabled: true
+      name: "Money Flow Index"
+      period: 14
+      parameters:
+        overbought: 80
+        oversold: 20
+
+    ad:
+      enabled: true
+      name: "Accumulation/Distribution"
+
+    cmf:
+      enabled: true
+      name: "Chaikin Money Flow"
+      period: 20
+
+    volume_profile:
+      enabled: true
+      name: "Volume Profile"
+      parameters:
+        num_bins: 50
+
+  # Oscillators
+  oscillators:
+    awesome_oscillator:
+      enabled: true
+      name: "Awesome Oscillator"
+      parameters:
+        fast_period: 5
+        slow_period: 34
+
+    tsi:
+      enabled: true
+      name: "True Strength Index"
+      parameters:
+        long_period: 25
+        short_period: 13
+        signal_period: 13
+
+# Multi-timeframe Features
+multi_timeframe:
+  enabled: true
+  base_timeframe: 15m  # Primary timeframe for trading
+  higher_timeframes:
+    - 1h
+    - 4h
+    - 1d
+
+  # Features to calculate from higher timeframes
+  features:
+    - trend_direction  # Trend from higher timeframe
+    - support_resistance  # Key levels
+    - volatility_regime  # High/low volatility
+    - momentum_alignment  # Aligned momentum across timeframes
+
+# Correlation Features
+correlation:
+  enabled: true
+  window: 50  # Rolling window for correlation calculation
+
+  # Asset pairs for correlation analysis
+  pairs:
+    - [SPY, QQQ]  # Stock indices correlation
+    - [GLD, USO]  # Commodities correlation
+    - [BTCUSDT, ETHUSDT]  # Crypto correlation
+    - [EURUSD, GBPUSD]  # Forex correlation
+
+  # Correlation with market indices
+  market_correlations:
+    enabled: true
+    benchmark: SPY
+
+# Custom Features
+custom_features:
+  # Price action features
+  price_action:
+    - name: higher_high
+      description: "Price making higher highs"
+
+    - name: lower_low
+      description: "Price making lower lows"
+
+    - name: inside_bar
+      description: "Inside bar pattern"
+
+    - name: outside_bar
+      description: "Outside bar pattern"
+
+    - name: gap_up
+      description: "Gap up from previous close"
+
+    - name: gap_down
+      description: "Gap down from previous close"
+
+  # Candlestick patterns
+  candlestick_patterns:
+    - doji
+    - hammer
+    - shooting_star
+    - engulfing
+    - morning_star
+    - evening_star
+
+  # Statistical features
+  statistical:
+    - name: returns
+      periods: [1, 5, 10, 20]
+
+    - name: log_returns
+      periods: [1, 5, 10, 20]
+
+    - name: realized_volatility
+      window: 20
+
+    - name: skewness
+      window: 20
+
+    - name: kurtosis
+      window: 20
+
+# Feature Selection
+feature_selection:
+  enabled: true
+  method: mutual_information  # mutual_information, correlation, pca, lasso
+
+  # Remove highly correlated features
+  remove_correlated:
+    enabled: true
+    threshold: 0.85
+
+  # Remove low variance features
+  remove_low_variance:
+    enabled: true
+    threshold: 0.01
+
+  # Select top K features
+  select_top_k:
+    enabled: true
+    k: 50
+
+  # Feature importance from tree-based models
+  importance_based:
+    enabled: true
+    model: random_forest
+    threshold: 0.01  # Minimum importance
+
+# Feature Engineering Pipeline
+pipeline:
+  steps:
+    - raw_ohlcv  # Use raw OHLCV data
+    - technical_indicators  # Calculate indicators
+    - multi_timeframe  # Add higher timeframe features
+    - correlation  # Add correlation features
+    - custom_features  # Add custom features
+    - feature_selection  # Select best features
+    - normalization  # Normalize features
