@@ -1,6 +1,26 @@
-# Financial Market Sentiment Analyzer
+# Claude Cloud - Financial Applications Suite
 
+A collection of AI-powered financial analysis and trading applications.
+
+## Applications
+
+### 1. Financial Market Sentiment Analyzer
 A comprehensive Python application for collecting, analyzing, and visualizing financial market sentiment data across Forex, Commodities, Stocks, and ETF markets. The system compares sentiment from news sources with futures market positioning to identify alignment and divergence opportunities.
+
+**Status:** ✅ Active
+**Location:** `financial-sentiment-analyzer/`
+**Documentation:** [View README](financial-sentiment-analyzer/README.md)
+
+### 2. TradeAI
+AI-powered trading application (Coming Soon)
+
+**Status:** 🚧 Under Development
+**Location:** `tradeAI/`
+**Documentation:** [View README](tradeAI/README.md)
+
+---
+
+## Financial Market Sentiment Analyzer - Overview
 
 ## Features
 
@@ -26,7 +46,7 @@ A comprehensive Python application for collecting, analyzing, and visualizing fi
 - Source attribution and publication dates
 - Keywords and trend analysis
 
-## Project Structure
+## Repository Structure
 
 ```
 claude_cloud/
@@ -39,9 +59,16 @@ claude_cloud/
 │   ├── dashboard.py                 # Interactive Plotly Dash dashboard
 │   ├── example_usage.py             # Example usage script
 │   └── requirements.txt             # Python dependencies
-├── README.md                        # This file
-└── QUICKSTART.md                    # Quick start guide
+├── tradeAI/                         # TradeAI Application (Under Development)
+│   ├── README.md                    # TradeAI documentation
+│   └── requirements.txt             # Python dependencies
+├── README.md                        # This file (main repository README)
+└── QUICKSTART.md                    # Quick start guide for Sentiment Analyzer
 ```
+
+## Project Structure (Financial Sentiment Analyzer)
+
+Each application has its own self-contained folder with dedicated documentation.
 
 ## Installation
 
