@@ -5,10 +5,13 @@ Get the Financial Sentiment Analyzer up and running in 5 minutes!
 ## Installation
 
 ```bash
-# 1. Install dependencies
+# 1. Navigate to the app folder
+cd financial-sentiment-analyzer
+
+# 2. Install dependencies
 pip install -r requirements.txt
 
-# 2. Initialize the database
+# 3. Initialize the database
 python main.py --init
 ```
 
@@ -140,7 +143,7 @@ By default, the analyzer tracks:
 
 1. **Explore the Dashboard**: Interactive charts and filters
 2. **Review Divergences**: Identify potential opportunities
-3. **Customize Data Sources**: See README.md for real API integration
+3. **Customize Data Sources**: See `../README.md` for real API integration
 4. **Run Examples**: `python example_usage.py` for programmatic usage
 
 ## Troubleshooting

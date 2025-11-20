@@ -29,15 +29,18 @@ A comprehensive Python application for collecting, analyzing, and visualizing fi
 ## Project Structure
 
 ```
-financial-sentiment-analyzer/
-├── main.py                    # Main application entry point
-├── database.py                # SQLite database schema and operations
-├── sentiment_analyzer.py      # News and futures sentiment analysis
-├── comparison_engine.py       # Sentiment comparison logic
-├── data_collectors.py         # Data collection modules
-├── dashboard.py               # Interactive Plotly Dash dashboard
-├── requirements.txt           # Python dependencies
-└── README.md                  # This file
+claude_cloud/
+├── financial-sentiment-analyzer/    # Financial Market Sentiment Analyzer App
+│   ├── main.py                      # Main application entry point
+│   ├── database.py                  # SQLite database schema and operations
+│   ├── sentiment_analyzer.py        # News and futures sentiment analysis
+│   ├── comparison_engine.py         # Sentiment comparison logic
+│   ├── data_collectors.py           # Data collection modules
+│   ├── dashboard.py                 # Interactive Plotly Dash dashboard
+│   ├── example_usage.py             # Example usage script
+│   └── requirements.txt             # Python dependencies
+├── README.md                        # This file
+└── QUICKSTART.md                    # Quick start guide
 ```
 
 ## Installation
@@ -51,7 +54,7 @@ financial-sentiment-analyzer/
 1. Clone or download the repository:
 ```bash
 git clone <repository-url>
-cd claude_cloud
+cd claude_cloud/financial-sentiment-analyzer
 ```
 
 2. Install dependencies:
@@ -233,6 +236,8 @@ The current implementation uses mock data for demonstration. To integrate real A
 ### Adding New Symbols
 
 ```python
+import sys
+sys.path.append('financial-sentiment-analyzer')
 from database import Database
 
 db = Database()
@@ -249,6 +254,8 @@ db.add_market_symbol(
 The modular design allows easy customization:
 
 ```python
+import sys
+sys.path.append('financial-sentiment-analyzer')
 from sentiment_analyzer import NewsSentimentAnalyzer
 from comparison_engine import SentimentComparator
 
