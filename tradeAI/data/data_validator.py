@@ -7,8 +7,8 @@ from typing import Dict, List, Optional, Tuple
 import pandas as pd
 import numpy as np
 
-from tradeai.utils.logger import get_logger
-from tradeai.utils.validators import validate_ohlcv
+from tradeAI.utils.logger import get_logger
+from tradeAI.utils.validators import validate_ohlcv
 
 logger = get_logger(__name__)
 

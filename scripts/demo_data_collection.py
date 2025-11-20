@@ -16,11 +16,11 @@ from datetime import datetime, timedelta
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from tradeai.data.providers.yfinance_provider import YFinanceProvider
-from tradeai.data.data_aggregator import DataAggregator
-from tradeai.data.cache_manager import CacheManager
-from tradeai.data.data_validator import DataValidator
-from tradeai.utils.logger import setup_logging, get_logger
+from tradeAI.data.providers.yfinance_provider import YFinanceProvider
+from tradeAI.data.data_aggregator import DataAggregator
+from tradeAI.data.cache_manager import CacheManager
+from tradeAI.data.data_validator import DataValidator
+from tradeAI.utils.logger import setup_logging, get_logger
 
 # Setup logging
 setup_logging(log_level="INFO")

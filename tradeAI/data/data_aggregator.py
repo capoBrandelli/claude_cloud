@@ -7,10 +7,10 @@ from typing import Dict, List, Optional
 
 import pandas as pd
 
-from tradeai.data.base_provider import BaseDataProvider
-from tradeai.data.cache_manager import CacheManager
-from tradeai.data.data_validator import DataValidator
-from tradeai.utils.logger import get_logger
+from tradeAI.data.base_provider import BaseDataProvider
+from tradeAI.data.cache_manager import CacheManager
+from tradeAI.data.data_validator import DataValidator
+from tradeAI.utils.logger import get_logger
 
 logger = get_logger(__name__)
 

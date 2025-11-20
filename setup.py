@@ -106,7 +106,7 @@ setup(
     },
     include_package_data=True,
     package_data={
-        "tradeai": ["config/*.yaml"],
+        "tradeAI": ["config/*.yaml"],
     },
     zip_safe=False,
 )

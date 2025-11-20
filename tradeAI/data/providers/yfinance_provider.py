@@ -9,7 +9,7 @@ from typing import Optional
 import pandas as pd
 import yfinance as yf
 
-from tradeai.data.base_provider import BaseDataProvider, ProviderError
+from tradeAI.data.base_provider import BaseDataProvider, ProviderError
 
 
 class YFinanceProvider(BaseDataProvider):

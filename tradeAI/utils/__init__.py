@@ -2,15 +2,15 @@
 Utility modules for TradeAI
 """
 
-from tradeai.utils.logger import get_logger, setup_logging
-from tradeai.utils.config_loader import load_config, ConfigLoader
-from tradeai.utils.validators import (
+from tradeAI.utils.logger import get_logger, setup_logging
+from tradeAI.utils.config_loader import load_config, ConfigLoader
+from tradeAI.utils.validators import (
     validate_dataframe,
     validate_ohlcv,
     validate_timeframe,
     validate_symbol,
 )
-from tradeai.utils.helpers import (
+from tradeAI.utils.helpers import (
     ensure_dir,
     save_pickle,
     load_pickle,

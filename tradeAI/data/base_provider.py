@@ -8,8 +8,8 @@ from typing import Optional, List
 
 import pandas as pd
 
-from tradeai.utils.logger import get_logger
-from tradeai.utils.validators import validate_symbol, validate_timeframe
+from tradeAI.utils.logger import get_logger
+from tradeAI.utils.validators import validate_symbol, validate_timeframe
 
 logger = get_logger(__name__)
 

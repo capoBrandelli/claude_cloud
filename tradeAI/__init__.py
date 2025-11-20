@@ -13,8 +13,8 @@ __version__ = "0.1.0"
 __author__ = "TradeAI Team"
 __license__ = "MIT"
 
-from tradeai.utils.logger import get_logger
-from tradeai.utils.config_loader import load_config
+from tradeAI.utils.logger import get_logger
+from tradeAI.utils.config_loader import load_config
 
 # Initialize package-level logger
 logger = get_logger(__name__)

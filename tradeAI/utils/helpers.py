@@ -6,7 +6,7 @@ import pickle
 from pathlib import Path
 from typing import Any, Dict
 
-from tradeai.utils.logger import get_logger
+from tradeAI.utils.logger import get_logger
 
 logger = get_logger(__name__)
 

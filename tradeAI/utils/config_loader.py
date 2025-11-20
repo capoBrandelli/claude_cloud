@@ -9,7 +9,7 @@ from typing import Any, Dict, Optional
 import yaml
 from dotenv import load_dotenv
 
-from tradeai.utils.logger import get_logger
+from tradeAI.utils.logger import get_logger
 
 logger = get_logger(__name__)
 

@@ -10,8 +10,8 @@ from typing import Optional
 
 import pandas as pd
 
-from tradeai.utils.logger import get_logger
-from tradeai.utils.helpers import ensure_dir
+from tradeAI.utils.logger import get_logger
+from tradeAI.utils.helpers import ensure_dir
 
 logger = get_logger(__name__)
 
