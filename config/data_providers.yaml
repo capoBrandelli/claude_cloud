@@ -1,0 +1,246 @@
+# Data Provider Configuration
+
+providers:
+  alpha_vantage:
+    enabled: true
+    name: "Alpha Vantage"
+    api_key_env: ALPHA_VANTAGE_API_KEY
+    base_url: "https://www.alphavantage.co/query"
+    rate_limit: 5  # requests per minute
+    priority: 1
+    supported_asset_classes:
+      - stocks
+      - forex
+      - commodities
+    supported_timeframes:
+      - 1min
+      - 5min
+      - 15min
+      - 30min
+      - 60min
+      - daily
+      - weekly
+      - monthly
+
+  yfinance:
+    enabled: true
+    name: "Yahoo Finance"
+    rate_limit: 2000  # requests per hour
+    priority: 2
+    supported_asset_classes:
+      - stocks
+      - indices
+      - etfs
+      - forex
+      - commodities
+      - crypto
+    supported_timeframes:
+      - 1m
+      - 2m
+      - 5m
+      - 15m
+      - 30m
+      - 60m
+      - 90m
+      - 1h
+      - 1d
+      - 5d
+      - 1wk
+      - 1mo
+      - 3mo
+
+  polygon:
+    enabled: true
+    name: "Polygon.io"
+    api_key_env: POLYGON_API_KEY
+    base_url: "https://api.polygon.io"
+    rate_limit: 5  # requests per second (free tier)
+    priority: 3
+    supported_asset_classes:
+      - stocks
+      - forex
+      - crypto
+    supported_timeframes:
+      - 1min
+      - 5min
+      - 15min
+      - 30min
+      - 1hour
+      - 1day
+
+  binance:
+    enabled: true
+    name: "Binance"
+    api_key_env: BINANCE_API_KEY
+    api_secret_env: BINANCE_API_SECRET
+    base_url: "https://api.binance.com"
+    rate_limit: 1200  # requests per minute
+    priority: 1
+    supported_asset_classes:
+      - crypto
+    supported_timeframes:
+      - 1m
+      - 3m
+      - 5m
+      - 15m
+      - 30m
+      - 1h
+      - 2h
+      - 4h
+      - 6h
+      - 8h
+      - 12h
+      - 1d
+      - 3d
+      - 1w
+      - 1M
+
+  twelvedata:
+    enabled: true
+    name: "Twelve Data"
+    api_key_env: TWELVE_DATA_API_KEY
+    base_url: "https://api.twelvedata.com"
+    rate_limit: 8  # requests per minute (free tier)
+    priority: 4
+    supported_asset_classes:
+      - stocks
+      - forex
+      - crypto
+      - etfs
+      - indices
+    supported_timeframes:
+      - 1min
+      - 5min
+      - 15min
+      - 30min
+      - 45min
+      - 1h
+      - 2h
+      - 4h
+      - 1day
+      - 1week
+      - 1month
+
+# Instrument configuration
+instruments:
+  # Stock Indices
+  indices:
+    - symbol: SPY
+      name: "SPDR S&P 500 ETF"
+      asset_class: indices
+      primary_provider: yfinance
+      backup_providers: [polygon, twelvedata]
+
+    - symbol: QQQ
+      name: "Invesco QQQ Trust"
+      asset_class: indices
+      primary_provider: yfinance
+      backup_providers: [polygon, twelvedata]
+
+    - symbol: DIA
+      name: "SPDR Dow Jones Industrial Average ETF"
+      asset_class: indices
+      primary_provider: yfinance
+      backup_providers: [twelvedata]
+
+  # Forex
+  forex:
+    - symbol: EURUSD
+      name: "Euro / US Dollar"
+      asset_class: forex
+      primary_provider: alpha_vantage
+      backup_providers: [polygon, twelvedata]
+
+    - symbol: GBPUSD
+      name: "British Pound / US Dollar"
+      asset_class: forex
+      primary_provider: alpha_vantage
+      backup_providers: [polygon, twelvedata]
+
+    - symbol: USDJPY
+      name: "US Dollar / Japanese Yen"
+      asset_class: forex
+      primary_provider: alpha_vantage
+      backup_providers: [polygon, twelvedata]
+
+  # Commodities (via ETFs)
+  commodities:
+    - symbol: GLD
+      name: "SPDR Gold Trust"
+      asset_class: commodities
+      primary_provider: yfinance
+      backup_providers: [polygon, twelvedata]
+
+    - symbol: USO
+      name: "United States Oil Fund"
+      asset_class: commodities
+      primary_provider: yfinance
+      backup_providers: [polygon, twelvedata]
+
+    - symbol: SLV
+      name: "iShares Silver Trust"
+      asset_class: commodities
+      primary_provider: yfinance
+      backup_providers: [twelvedata]
+
+  # Cryptocurrencies
+  crypto:
+    - symbol: BTCUSDT
+      name: "Bitcoin / Tether"
+      asset_class: crypto
+      primary_provider: binance
+      backup_providers: [polygon, yfinance]
+
+    - symbol: ETHUSDT
+      name: "Ethereum / Tether"
+      asset_class: crypto
+      primary_provider: binance
+      backup_providers: [polygon, yfinance]
+
+    - symbol: BNBUSDT
+      name: "Binance Coin / Tether"
+      asset_class: crypto
+      primary_provider: binance
+      backup_providers: [yfinance]
+
+  # Individual Stocks (examples)
+  stocks:
+    - symbol: AAPL
+      name: "Apple Inc."
+      asset_class: stocks
+      primary_provider: yfinance
+      backup_providers: [polygon, alpha_vantage, twelvedata]
+
+    - symbol: MSFT
+      name: "Microsoft Corporation"
+      asset_class: stocks
+      primary_provider: yfinance
+      backup_providers: [polygon, alpha_vantage, twelvedata]
+
+    - symbol: GOOGL
+      name: "Alphabet Inc."
+      asset_class: stocks
+      primary_provider: yfinance
+      backup_providers: [polygon, twelvedata]
+
+# Timeframe configuration
+timeframes:
+  primary:
+    - 5m
+    - 15m
+    - 1h
+    - 4h
+    - 1d
+
+  additional:
+    - 1m
+    - 30m
+    - 1w
+
+# Data validation settings
+validation:
+  price_tolerance: 0.01  # 1% tolerance for price differences
+  volume_tolerance: 0.05  # 5% tolerance for volume differences
+  min_data_points: 100  # Minimum data points required
+  check_gaps: true
+  max_gap_size: 3  # Maximum number of consecutive missing bars
