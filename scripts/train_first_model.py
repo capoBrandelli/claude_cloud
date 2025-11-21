@@ -35,6 +35,7 @@ from tradeAI.models.architectures.lstm import LSTMModel
 from tradeAI.training.trainer import Trainer
 from tradeAI.utils.logger import setup_logging, get_logger
 from tradeAI.utils.helpers import ensure_dir
+from tradeAI.utils.validation import TemporalValidator
 
 # Setup logging
 setup_logging(log_level="INFO")
@@ -107,6 +108,15 @@ def main():
     df = df.dropna()
     logger.info(f"  After removing NaN: {len(df)} bars")
 
+    # Validate feature computation (check for forward-looking bias)
+    logger.info("\nValidating feature computation...")
+    feature_check = TemporalValidator.check_feature_computation(
+        df,
+        feature_cols=[col for col in df.columns if col not in ["open", "high", "low", "close", "volume"]],
+    )
+    if feature_check["warnings"]:
+        logger.warning(f"Feature validation warnings: {feature_check['warnings']}")
+
     # ========================================================================
     # STEP 4: Labeling
     # ========================================================================
@@ -170,6 +180,19 @@ def main():
     logger.info(f"  Train: {len(X_train_raw)} samples")
     logger.info(f"  Val:   {len(X_val_raw)} samples")
     logger.info(f"  Test:  {len(X_test_raw)} samples")
+
+    # Validate temporal split (ensure no forward-looking bias)
+    logger.info("\nValidating temporal split...")
+    train_df = df.iloc[:train_end]
+    val_df = df.iloc[train_end:val_end]
+    test_df = df.iloc[val_end:]
+
+    TemporalValidator.validate_temporal_split(
+        train_data=train_df,
+        val_data=val_df,
+        test_data=test_df,
+        raise_on_error=True,
+    )
 
     # Normalize features - fit ONLY on training data to prevent data leakage
     logger.info("\nNormalizing features...")
