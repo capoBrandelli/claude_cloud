@@ -148,13 +148,8 @@ def main():
     logger.info(f"  Features: {X.shape}")
     logger.info(f"  Labels: {y.shape}")
 
-    # Normalize features
-    normalizer = Normalizer(method="minmax")
-    X = normalizer.fit_transform(pd.DataFrame(X, columns=feature_cols)).values
-
-    logger.info("✓ Features normalized")
-
-    # Split into train/val/test
+    # Split into train/val/test BEFORE normalization
+    # This is CRITICAL to prevent data leakage!
     splitter = TimeSeriesSplitter(
         train_ratio=0.7,
         val_ratio=0.15,
@@ -167,14 +162,28 @@ def main():
     train_end = int(n * 0.7)
     val_end = int(n * 0.85)
 
-    X_train, y_train = X[:train_end], y[:train_end]
-    X_val, y_val = X[train_end:val_end], y[train_end:val_end]
-    X_test, y_test = X[val_end:], y[val_end:]
+    X_train_raw, y_train = X[:train_end], y[:train_end]
+    X_val_raw, y_val = X[train_end:val_end], y[train_end:val_end]
+    X_test_raw, y_test = X[val_end:], y[val_end:]
 
     logger.info(f"✓ Data split:")
-    logger.info(f"  Train: {len(X_train)} samples")
-    logger.info(f"  Val:   {len(X_val)} samples")
-    logger.info(f"  Test:  {len(X_test)} samples")
+    logger.info(f"  Train: {len(X_train_raw)} samples")
+    logger.info(f"  Val:   {len(X_val_raw)} samples")
+    logger.info(f"  Test:  {len(X_test_raw)} samples")
+
+    # Normalize features - fit ONLY on training data to prevent data leakage
+    logger.info("\nNormalizing features...")
+    normalizer = Normalizer(method="minmax")
+
+    # Fit on TRAINING data only
+    X_train = normalizer.fit_transform(pd.DataFrame(X_train_raw, columns=feature_cols)).values
+
+    # Transform val/test using TRAINING statistics (no data leakage!)
+    X_val = normalizer.transform(pd.DataFrame(X_val_raw, columns=feature_cols)).values
+    X_test = normalizer.transform(pd.DataFrame(X_test_raw, columns=feature_cols)).values
+
+    logger.info("✓ Features normalized using ONLY training statistics")
+    logger.info("  (No data leakage - test/val statistics not used in normalization)")
 
     # ========================================================================
     # STEP 6: Model Training (MLP)
@@ -233,25 +242,30 @@ def main():
     logger.info("STEP 7: Training LSTM Model")
     logger.info("=" * 70)
 
-    # Create sequences for LSTM
+    # Create sequences for LSTM from already-normalized splits
+    # This ensures no data leakage in sequence creation
     from tradeAI.preprocessing.splitter import create_sequences
 
     sequence_length = 30  # Use 30 time steps
+
+    # Concatenate normalized data for sequence creation (maintains temporal order)
+    X_all_normalized = np.concatenate([X_train, X_val, X_test], axis=0)
+    y_all = np.concatenate([y_train, y_val, y_test], axis=0)
 
     # Create sequences
     X_seq_full = []
     y_seq_full = []
 
-    for i in range(sequence_length, len(X)):
-        X_seq_full.append(X[i-sequence_length:i])
-        y_seq_full.append(y[i])
+    for i in range(sequence_length, len(X_all_normalized)):
+        X_seq_full.append(X_all_normalized[i-sequence_length:i])
+        y_seq_full.append(y_all[i])
 
     X_seq_full = np.array(X_seq_full)
     y_seq_full = np.array(y_seq_full)
 
     logger.info(f"✓ Created sequences: {X_seq_full.shape}")
 
-    # Split sequences
+    # Split sequences (maintaining same temporal splits)
     n_seq = len(X_seq_full)
     train_end_seq = int(n_seq * 0.7)
     val_end_seq = int(n_seq * 0.85)
