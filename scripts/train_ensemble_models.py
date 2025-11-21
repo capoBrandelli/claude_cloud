@@ -42,6 +42,8 @@ from tradeAI.training.trainer import Trainer
 from tradeAI.utils.logger import setup_logging, get_logger
 from tradeAI.utils.helpers import ensure_dir
 from tradeAI.utils.validation import TemporalValidator
+from tradeAI.visualization import TradeAIReportGenerator
+from tradeAI.models.ensemble import RuleBasedCombiner
 
 # Setup logging
 setup_logging(log_level="INFO")
@@ -53,6 +55,9 @@ def main():
     logger.info("=" * 80)
     logger.info("TradeAI: Three-Model Ensemble Training Pipeline")
     logger.info("=" * 80)
+
+    # Initialize report generator
+    report_gen = TradeAIReportGenerator(output_dir="results")
     logger.info("")
     logger.info("Training Strategy:")
     logger.info("  Model 1: Reversal Probability  - Identifies turning points")
@@ -404,7 +409,94 @@ def main():
     logger.info(f"  Test loss: {metrics_direction['test_loss']:.4f}")
 
     # ========================================================================
-    # STEP 9: Ensemble Summary
+    # STEP 8.5: Generate Ensemble Visualization Report
+    # ========================================================================
+    logger.info("\n" + "=" * 80)
+    logger.info("STEP 9: Generating Ensemble Visualization Reports")
+    logger.info("=" * 80)
+
+    # Get test predictions from all three models
+    p_reversal_test = trainer_reversal.predict(X_test)
+    p_continuation_test = trainer_continuation.predict(X_test)
+    p_direction_test = trainer_direction.predict(X_test)
+
+    # Combine signals using rule-based combiner
+    combiner = RuleBasedCombiner(num_classes=output_size)
+    ensemble_result = combiner.combine(
+        p_reversal_test,
+        p_continuation_test,
+        p_direction_test
+    )
+
+    combined_signals = ensemble_result['signal']
+    confidence = ensemble_result['confidence']
+    agreement = ensemble_result['agreement']
+
+    # Generate ensemble report
+    ensemble_report_path = report_gen.generate_ensemble_report(
+        df=test_df,
+        reversal_probs=p_reversal_test,
+        continuation_probs=p_continuation_test,
+        direction_probs=p_direction_test,
+        combined_signals=combined_signals,
+        confidence=confidence,
+        agreement=agreement,
+        symbol=symbol,
+        timeframe=timeframe,
+        metadata={
+            "num_samples": len(test_df),
+            "total_params": (
+                model_reversal.get_num_parameters() +
+                model_continuation.get_num_parameters() +
+                model_direction.get_num_parameters()
+            ),
+            "reversal_accuracy": metrics_reversal['test_accuracy'],
+            "continuation_accuracy": metrics_continuation['test_accuracy'],
+            "direction_accuracy": metrics_direction['test_accuracy'],
+        }
+    )
+    logger.info(f"\n✓ Ensemble report generated: {ensemble_report_path}")
+
+    # Also generate individual model reports
+    logger.info("\nGenerating individual model reports...")
+
+    # Reversal training report
+    rev_train_report = report_gen.generate_training_report(
+        df=train_df,
+        labels=y_reversal_train,
+        label_type="reversal",
+        model_name="Reversal",
+        symbol=symbol,
+        timeframe=timeframe,
+        metadata={"num_samples": len(train_df), "model_params": model_reversal.get_num_parameters()}
+    )
+
+    # Continuation training report
+    cont_train_report = report_gen.generate_training_report(
+        df=train_df,
+        labels=y_continuation_train,
+        label_type="continuation",
+        model_name="Continuation",
+        symbol=symbol,
+        timeframe=timeframe,
+        metadata={"num_samples": len(train_df), "model_params": model_continuation.get_num_parameters()}
+    )
+
+    # Direction training report
+    dir_train_report = report_gen.generate_training_report(
+        df=train_df,
+        labels=y_direction_train,
+        label_type="direction",
+        model_name="Direction",
+        symbol=symbol,
+        timeframe=timeframe,
+        metadata={"num_samples": len(train_df), "model_params": model_direction.get_num_parameters()}
+    )
+
+    logger.info("✓ All visualization reports generated successfully!")
+
+    # ========================================================================
+    # STEP 10: Ensemble Summary
     # ========================================================================
     logger.info("\n" + "=" * 80)
     logger.info("ENSEMBLE TRAINING SUMMARY")
@@ -447,11 +539,17 @@ def main():
     logger.info("✓ Ensemble training completed successfully!")
     logger.info("=" * 80)
 
+    logger.info("\nGenerated Reports (saved to results/):")
+    logger.info(f"  1. Ensemble report: {ensemble_report_path}")
+    logger.info(f"  2. Reversal training report: {rev_train_report}")
+    logger.info(f"  3. Continuation training report: {cont_train_report}")
+    logger.info(f"  4. Direction training report: {dir_train_report}")
+
     logger.info("\nNext steps:")
-    logger.info("  1. Implement signal combination (rule-based, weighted, meta-model)")
-    logger.info("  2. Test ensemble on new data")
-    logger.info("  3. Implement walk-forward backtesting")
-    logger.info("  4. Analyze agreement/disagreement patterns")
+    logger.info("  1. Open HTML reports in browser to analyze ensemble results")
+    logger.info("  2. Analyze agreement/disagreement patterns in reports")
+    logger.info("  3. Test ensemble on new data")
+    logger.info("  4. Implement walk-forward backtesting")
     logger.info("  5. Deploy for real-time predictions")
 
     logger.info("\nUsage example:")

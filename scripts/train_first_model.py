@@ -36,6 +36,7 @@ from tradeAI.training.trainer import Trainer
 from tradeAI.utils.logger import setup_logging, get_logger
 from tradeAI.utils.helpers import ensure_dir
 from tradeAI.utils.validation import TemporalValidator
+from tradeAI.visualization import TradeAIReportGenerator
 
 # Setup logging
 setup_logging(log_level="INFO")
@@ -47,6 +48,9 @@ def main():
     logger.info("=" * 70)
     logger.info("TradeAI: End-to-End Model Training Pipeline")
     logger.info("=" * 70)
+
+    # Initialize report generator
+    report_gen = TradeAIReportGenerator(output_dir="results")
 
     # ========================================================================
     # STEP 1: Data Collection
@@ -259,6 +263,68 @@ def main():
     logger.info(f"  Final test loss: {metrics_mlp['test_loss']:.4f}")
 
     # ========================================================================
+    # STEP 6.5: Generate Visualization Reports (MLP)
+    # ========================================================================
+    logger.info("\nGenerating visualization reports...")
+
+    # Get predictions and probabilities
+    mlp_predictions = trainer_mlp.predict(X_test)
+    mlp_pred_classes = np.argmax(mlp_predictions, axis=1)
+
+    # Training report (labels on chart)
+    train_report_path = report_gen.generate_training_report(
+        df=train_df,
+        labels=y_train,
+        label_type="reversal",
+        model_name="MLP",
+        symbol=symbol,
+        timeframe=timeframe,
+        metadata={
+            "num_samples": len(train_df),
+            "model_params": model_mlp.get_num_parameters(),
+            "hidden_layers": str([128, 64, 32]),
+            "dropout": 0.3,
+        }
+    )
+    logger.info(f"  Training report: {train_report_path}")
+
+    # Validation report
+    val_report_path = report_gen.generate_prediction_report(
+        df=val_df,
+        true_labels=y_val,
+        predictions=np.argmax(trainer_mlp.predict(X_val), axis=1),
+        probabilities=trainer_mlp.predict(X_val),
+        model_name="MLP",
+        symbol=symbol,
+        timeframe=timeframe,
+        split_type="validation",
+        metadata={
+            "num_samples": len(val_df),
+            "model_params": model_mlp.get_num_parameters(),
+        }
+    )
+    logger.info(f"  Validation report: {val_report_path}")
+
+    # Test report
+    test_report_path = report_gen.generate_prediction_report(
+        df=test_df,
+        true_labels=y_test,
+        predictions=mlp_pred_classes,
+        probabilities=mlp_predictions,
+        model_name="MLP",
+        symbol=symbol,
+        timeframe=timeframe,
+        split_type="test",
+        metadata={
+            "num_samples": len(test_df),
+            "model_params": model_mlp.get_num_parameters(),
+            "test_accuracy": metrics_mlp['test_accuracy'],
+            "test_loss": metrics_mlp['test_loss'],
+        }
+    )
+    logger.info(f"  Test report: {test_report_path}")
+
+    # ========================================================================
     # STEP 7: Training LSTM Model (with sequences)
     # ========================================================================
     logger.info("\n" + "=" * 70)
@@ -345,6 +411,35 @@ def main():
     logger.info(f"  Final test loss: {metrics_lstm['test_loss']:.4f}")
 
     # ========================================================================
+    # STEP 7.5: Generate Visualization Reports (LSTM)
+    # ========================================================================
+    logger.info("\nGenerating LSTM visualization reports...")
+
+    # Get predictions and probabilities
+    lstm_predictions = trainer_lstm.predict(X_test_seq)
+    lstm_pred_classes = np.argmax(lstm_predictions, axis=1)
+
+    # Test report for LSTM
+    lstm_test_report_path = report_gen.generate_prediction_report(
+        df=test_df.iloc[sequence_length:],  # Adjust for sequence length
+        true_labels=y_test_seq,
+        predictions=lstm_pred_classes,
+        probabilities=lstm_predictions,
+        model_name="LSTM",
+        symbol=symbol,
+        timeframe=timeframe,
+        split_type="test",
+        metadata={
+            "num_samples": len(y_test_seq),
+            "model_params": model_lstm.get_num_parameters(),
+            "sequence_length": sequence_length,
+            "test_accuracy": metrics_lstm['test_accuracy'],
+            "test_loss": metrics_lstm['test_loss'],
+        }
+    )
+    logger.info(f"  LSTM test report: {lstm_test_report_path}")
+
+    # ========================================================================
     # SUMMARY
     # ========================================================================
     logger.info("\n" + "=" * 70)
@@ -372,12 +467,18 @@ def main():
     logger.info("✓ Pipeline completed successfully!")
     logger.info("=" * 70)
 
+    logger.info("\nGenerated Reports (saved to results/):")
+    logger.info(f"  1. Training report (with labels): {train_report_path}")
+    logger.info(f"  2. Validation report (MLP): {val_report_path}")
+    logger.info(f"  3. Test report (MLP): {test_report_path}")
+    logger.info(f"  4. Test report (LSTM): {lstm_test_report_path}")
+
     logger.info("\nNext steps:")
-    logger.info("  1. Experiment with different hyperparameters")
-    logger.info("  2. Try different symbols and timeframes")
-    logger.info("  3. Implement backtesting to evaluate trading performance")
-    logger.info("  4. Add more sophisticated features and indicators")
-    logger.info("  5. Ensemble multiple models for better predictions")
+    logger.info("  1. Open HTML reports in browser to analyze results")
+    logger.info("  2. Experiment with different hyperparameters")
+    logger.info("  3. Try different symbols and timeframes")
+    logger.info("  4. Train ensemble models: python scripts/train_ensemble_models.py")
+    logger.info("  5. Implement backtesting to evaluate trading performance")
 
     return 0
 
