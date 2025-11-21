@@ -122,8 +122,8 @@ class TradeAIReportGenerator:
             f"Training Report - {model_name}",
             symbol,
             timeframe,
-            df.index[0],
-            df.index[-1],
+            df['timestamp'].iloc[0] if 'timestamp' in df.columns else df.index[0],
+            df['timestamp'].iloc[-1] if 'timestamp' in df.columns else df.index[-1],
             metadata
         )
 
@@ -260,8 +260,8 @@ class TradeAIReportGenerator:
             f"{split_type.capitalize()} Report - {model_name}",
             symbol,
             timeframe,
-            df.index[0],
-            df.index[-1],
+            df['timestamp'].iloc[0] if 'timestamp' in df.columns else df.index[0],
+            df['timestamp'].iloc[-1] if 'timestamp' in df.columns else df.index[-1],
             metadata
         )
 
@@ -425,8 +425,8 @@ class TradeAIReportGenerator:
             "Ensemble Report - Three-Model System",
             symbol,
             timeframe,
-            df.index[0],
-            df.index[-1],
+            df['timestamp'].iloc[0] if 'timestamp' in df.columns else df.index[0],
+            df['timestamp'].iloc[-1] if 'timestamp' in df.columns else df.index[-1],
             metadata
         )
 
