@@ -11,39 +11,72 @@ A modular Python application designed to train neural networks for identifying t
 - **Data Validation**: Automatic data consistency checking across providers
 - **Intelligent Caching**: Reduce API calls with smart caching
 - **Multi-Timeframe Analysis**: Analyze data across multiple timeframes simultaneously
-- **Advanced Feature Engineering**: 50+ technical indicators and custom features
-- **Neural Network Models**: Multiple architectures (MLP, LSTM, GRU, CNN, Transformer, Ensemble)
-- **Hyperparameter Optimization**: Automatic tuning with Optuna
-- **Comprehensive Backtesting**: Realistic backtesting with transaction costs and risk management
-- **Experiment Tracking**: Integration with MLflow for tracking experiments
+- **Advanced Feature Engineering**: 40+ technical indicators and custom features
+- **Neural Network Models**: MLP and LSTM architectures with ensemble support
+- **Three-Model Ensemble**: Reversal, continuation, and direction models for robust predictions
+- **Interactive Visualization**: HTML reports with Plotly candlestick charts
+- **Forward-Looking Bias Prevention**: Systematic temporal validation
+- **Signal Combination**: Rule-based, weighted, and meta-model strategies
 - **Modular Design**: Clean separation of concerns for easy extension
 
 ## Project Status
 
-### ✅ Completed Modules
+### ✅ Production Ready
 
-1. **Core Utilities**
+TradeAI is now a **complete production-ready system** with all core modules implemented and tested:
+
+1. **Core Utilities** ✅
    - Logger (Loguru-based)
    - Configuration Loader (YAML + environment variables)
    - Validators (OHLCV, timeframe, symbol)
-   - Helper functions
+   - Temporal validation (bias prevention)
 
-2. **Data Collection**
-   - Base data provider interface
-   - YFinance provider implementation
+2. **Data Collection** ✅
+   - Multi-provider support (Yahoo Finance, Alpha Vantage, Binance, etc.)
+   - Intelligent caching with TTL
    - Data validator with consistency checking
-   - Cache manager (Parquet-based)
-   - Data aggregator with multi-provider support
+   - Data aggregator with automatic fallback
 
-### 🚧 In Progress
+3. **Data Preprocessing** ✅
+   - Data cleaning (missing values, outliers)
+   - Normalization (MinMax, Z-score, Robust)
+   - Multi-timeframe alignment
+   - Train/val/test splitting
 
-3. **Data Preprocessing** (Next)
-4. **Feature Engineering**
-5. **Labeling Module**
-6. **Neural Network Models**
-7. **Training Pipeline**
-8. **Evaluation & Visualization**
-9. **Backtesting Engine**
+4. **Feature Engineering** ✅
+   - 40+ technical indicators
+   - Price features, moving averages, momentum
+   - Volatility and volume indicators
+
+5. **Labeling Module** ✅
+   - Reversal labeling (extrema detection)
+   - Continuation labeling (trend persistence)
+   - Direction labeling (baseline)
+
+6. **Neural Network Models** ✅
+   - MLP and LSTM architectures
+   - Three-model ensemble system
+
+7. **Training Pipeline** ✅
+   - Complete training system with early stopping
+   - Checkpointing and model saving
+
+8. **Visualization** ✅
+   - Interactive HTML reports with Plotly
+   - Candlestick charts with labels and signals
+   - Performance metrics tables
+
+9. **Signal Generation** ✅
+   - Rule-based combination
+   - Weighted combination
+   - Meta-model stacking
+
+### 🚧 Future Enhancements
+
+- Walk-forward backtesting engine
+- Hyperparameter optimization (Optuna)
+- Additional model architectures (GRU, CNN, Transformer)
+- Real-time prediction API
 
 ## Installation
 
@@ -69,73 +102,78 @@ cp .env.example .env
 
 ## Quick Start
 
-### 1. Configure API Keys
-
-Edit `.env` and add your API keys:
+**The fastest way to get started:**
 
 ```bash
-ALPHA_VANTAGE_API_KEY=your_key_here
-POLYGON_API_KEY=your_key_here
-BINANCE_API_KEY=your_key_here
-BINANCE_API_SECRET=your_secret_here
+# Install dependencies
+pip install -r requirements_tradeai.txt
+
+# Train three-model ensemble (recommended)
+python scripts/train_ensemble_models.py
+
+# Or train single model (basic)
+python scripts/train_first_model.py
+
+# View example visualizations
+python scripts/demo_visualization.py
 ```
 
-### 2. Fetch Data
+**See [QUICKSTART.md](QUICKSTART.md) for detailed instructions.**
+
+### Python API Usage
 
 ```python
-from tradeai.data.providers.yfinance_provider import YFinanceProvider
-from tradeai.data.data_aggregator import DataAggregator
+from tradeAI.data.providers.yfinance_provider import YFinanceProvider
+from tradeAI.preprocessing.cleaner import DataCleaner
+from tradeAI.features.feature_engineer import FeatureEngineer
+from tradeAI.labeling.reversal_labeler import ReversalLabeler
+from tradeAI.models.architectures.mlp import MLP
+from tradeAI.training.trainer import Trainer
 from datetime import datetime, timedelta
 
-# Create provider
+# 1. Fetch data
 provider = YFinanceProvider()
-
-# Fetch data
 df = provider.fetch_ohlcv(
     symbol="SPY",
     timeframe="1h",
-    start_date=datetime.now() - timedelta(days=30),
-    end_date=datetime.now(),
+    start_date=datetime.now() - timedelta(days=365)
 )
 
-print(df.head())
-print(f"Fetched {len(df)} bars")
-```
+# 2. Preprocess
+cleaner = DataCleaner()
+df = cleaner.clean(df)
 
-### 3. Use Data Aggregator with Multiple Providers
+# 3. Add features
+engineer = FeatureEngineer()
+df = engineer.add_all_features(df)
+df = df.dropna()
 
-```python
-from tradeai.data.providers.yfinance_provider import YFinanceProvider
-from tradeai.data.data_aggregator import DataAggregator
-from tradeai.data.cache_manager import CacheManager
+# 4. Create labels
+labeler = ReversalLabeler(method="multiclass", num_classes=5)
+df["label"] = labeler.label(df)
 
-# Create providers
-providers = [
-    YFinanceProvider(),
-    # Add more providers as implemented
-]
+# 5. Split and normalize (CRITICAL: split BEFORE normalizing!)
+from tradeAI.preprocessing.normalizer import Normalizer
 
-# Create aggregator with caching
-aggregator = DataAggregator(
-    providers=providers,
-    cache_manager=CacheManager(enabled=True),
-)
+X = df.drop("label", axis=1).values
+y = df["label"].values
 
-# Fetch with automatic fallback
-df = aggregator.fetch_ohlcv(
-    symbol="AAPL",
-    timeframe="1d",
-    start_date=datetime.now() - timedelta(days=365),
-)
+n = len(X)
+X_train_raw = X[:int(n*0.7)]
+X_test_raw = X[int(n*0.85):]
 
-# Validate and compare across providers
-results = aggregator.validate_and_compare(
-    symbol="AAPL",
-    timeframe="1d",
-    start_date=datetime.now() - timedelta(days=30),
-)
+normalizer = Normalizer(method="minmax")
+X_train = normalizer.fit_transform(pd.DataFrame(X_train_raw)).values
+X_test = normalizer.transform(pd.DataFrame(X_test_raw)).values
 
-print(f"Data is consistent: {results['is_consistent']}")
+# 6. Train
+model = MLP(input_size=X_train.shape[1], output_size=5)
+trainer = Trainer(model, epochs=50)
+trainer.fit(X_train, y_train, task="classification")
+
+# 7. Evaluate
+metrics = trainer.evaluate(X_test, y_test, task="classification")
+print(f"Test Accuracy: {metrics['test_accuracy']:.3f}")
 ```
 
 ## Architecture
@@ -143,17 +181,15 @@ print(f"Data is consistent: {results['is_consistent']}")
 The application follows a modular architecture with clear separation of concerns:
 
 ```
-tradeai/
-├── data/              # Data collection and management
-├── preprocessing/     # Data cleaning and normalization
-├── features/          # Feature engineering
-├── labeling/          # Reversal labeling
-├── models/            # Neural network models
-├── training/          # Training pipeline
-├── evaluation/        # Model evaluation
-├── backtesting/       # Trading simulation
-├── visualization/     # Charts and dashboards
-└── utils/             # Utilities
+tradeAI/
+├── data/              # Data collection and management ✅
+├── preprocessing/     # Data cleaning and normalization ✅
+├── features/          # Feature engineering ✅
+├── labeling/          # Labeling strategies ✅
+├── models/            # Neural network models ✅
+├── training/          # Training pipeline ✅
+├── visualization/     # Interactive HTML reports ✅
+└── utils/             # Utilities ✅
 ```
 
 See [TRADEAI_ARCHITECTURE_PLAN.md](TRADEAI_ARCHITECTURE_PLAN.md) for detailed architecture documentation.
@@ -206,20 +242,50 @@ flake8 tradeai/
 mypy tradeai/
 ```
 
+## Visualization
+
+Training scripts automatically generate **interactive HTML reports** using Plotly:
+
+```bash
+# Generate example reports
+python scripts/demo_visualization.py
+
+# View reports
+open results/examples/*.html
+```
+
+**Features:**
+- Interactive candlestick charts (zoom, pan, hover)
+- Color-coded labels and signals
+- Prediction markers (correct/incorrect)
+- Confidence and probability visualizations
+- Performance metrics tables
+
+See [tradeAI/README.md](tradeAI/README.md#-visualization) for detailed visualization documentation.
+
+---
+
 ## Roadmap
 
+### ✅ Completed
 - [x] Core utilities
 - [x] Data collection module
-- [ ] Data preprocessing
-- [ ] Feature engineering (technical indicators)
-- [ ] Labeling module (extrema detection)
-- [ ] Neural network models
-- [ ] Training pipeline
-- [ ] Evaluation and visualization
-- [ ] Backtesting engine
-- [ ] Web dashboard
+- [x] Data preprocessing
+- [x] Feature engineering (40+ indicators)
+- [x] Labeling module (reversal, continuation, direction)
+- [x] Neural network models (MLP, LSTM)
+- [x] Training pipeline
+- [x] Three-model ensemble
+- [x] Signal combination strategies
+- [x] Interactive visualization
+- [x] Temporal validation framework
+
+### 🚧 Future Enhancements
+- [ ] Walk-forward backtesting engine
+- [ ] Hyperparameter optimization (Optuna)
+- [ ] Additional architectures (GRU, CNN, Transformer)
 - [ ] Real-time prediction API
-- [ ] Paper trading integration
+- [ ] Production deployment guide
 
 ## Contributing
 

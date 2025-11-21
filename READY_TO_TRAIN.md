@@ -24,6 +24,7 @@ python scripts/train_ensemble_models.py
 - Performance metrics for each model
 - Ensemble average accuracy
 - Usage examples for signal generation
+- **Interactive HTML reports** in `results/` with candlestick charts and signals
 
 **Time:** ~15 minutes on CPU
 
@@ -43,6 +44,7 @@ python scripts/train_first_model.py
 - Two trained models
 - Performance metrics
 - Ready to use for predictions
+- **Interactive HTML reports** in `results/` with predictions visualized
 
 **Time:** ~5 minutes on CPU
 
@@ -87,10 +89,15 @@ python scripts/train_first_model.py
 ✅ **Temporal Validation** (1 module, ~413 lines)
 - Systematic forward-looking bias prevention
 
+✅ **Visualization** (1 module, ~700 lines)
+- Interactive HTML reports with Plotly
+- Candlestick charts with labels and signals
+- Performance metrics tables
+
 ✅ **Core Utilities** (5 modules, ~1,000 lines)
 - Logging, configuration, validation
 
-**Total:** ~50 modules, ~8,500 lines of production code
+**Total:** ~51 modules, ~9,200 lines of production code
 
 ---
 
@@ -137,6 +144,25 @@ result = combiner.combine(p_reversal, p_continuation, p_direction)
 if result['signal'][0] == 1 and result['confidence'][0] > 0.7:
     enter_long_position()
 ```
+
+---
+
+## 📊 Visualize Results
+
+Training scripts automatically generate **interactive HTML reports**:
+
+```bash
+# View example reports
+python scripts/demo_visualization.py
+open results/examples/*.html
+```
+
+**Reports include:**
+- Interactive candlestick charts (zoom, pan, hover)
+- Color-coded labels and signals
+- Prediction accuracy markers
+- Probability distributions
+- Performance metrics tables
 
 ---
 

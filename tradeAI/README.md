@@ -40,6 +40,7 @@ python ../scripts/train_first_model.py
 - ✅ **Three-Model Ensemble** - Independent models for robust predictions
 - ✅ **Signal Combination** - Rule-based, weighted, meta-model strategies
 - ✅ **Forward-Looking Bias Prevention** - Systematic temporal validation
+- ✅ **Interactive Visualization** - HTML reports with Plotly candlestick charts
 - ✅ **Experiment Tracking** - Comprehensive logging with Loguru
 
 ---
@@ -83,6 +84,9 @@ tradeAI/
 │
 ├── training/                # Training Pipeline ✅
 │   └── trainer.py          # Complete training system
+│
+├── visualization/           # Interactive Reports ✅
+│   └── plotly_reports.py   # HTML report generation with Plotly
 │
 └── utils/                   # Utilities ✅
     ├── logger.py           # Loguru-based logging
@@ -246,6 +250,85 @@ Configuration files in `config/`:
 - **features.yaml** - Feature engineering settings
 - **models.yaml** - Model architectures and hyperparameters
 - **backtesting.yaml** - Backtesting parameters (planned)
+
+---
+
+## 📊 Visualization
+
+### Interactive HTML Reports
+
+TradeAI automatically generates interactive HTML reports for all training and prediction tasks using Plotly:
+
+**Features:**
+- Interactive candlestick charts (zoom, pan, hover for OHLCV data)
+- Color-coded labels and signals
+- Prediction markers (correct/incorrect)
+- Confidence and probability visualizations
+- Performance metrics tables
+- Model metadata and parameters
+
+**Report Types:**
+
+1. **Training Reports** - Visualize training data with labels
+   ```python
+   from tradeAI.visualization import TradeAIReportGenerator
+
+   report_gen = TradeAIReportGenerator(output_dir="results")
+   report_gen.generate_training_report(
+       df=train_df,
+       labels=y_train,
+       label_type="reversal",
+       model_name="MLP",
+       symbol="SPY",
+       timeframe="1h"
+   )
+   ```
+
+2. **Prediction Reports** - Visualize test results with predictions
+   ```python
+   report_gen.generate_prediction_report(
+       df=test_df,
+       true_labels=y_test,
+       predictions=predictions,
+       probabilities=probabilities,
+       model_name="MLP",
+       symbol="SPY",
+       timeframe="1h",
+       split_type="test"
+   )
+   ```
+
+3. **Ensemble Reports** - Visualize combined signals from all models
+   ```python
+   report_gen.generate_ensemble_report(
+       df=test_df,
+       reversal_probs=p_reversal,
+       continuation_probs=p_continuation,
+       direction_probs=p_direction,
+       combined_signals=signals,
+       confidence=confidence,
+       agreement=agreement,
+       symbol="SPY",
+       timeframe="1h"
+   )
+   ```
+
+**Demo Visualization:**
+
+Generate example reports with synthetic data:
+
+```bash
+python scripts/demo_visualization.py
+```
+
+This creates 6 example reports in `results/examples/` showcasing all visualization types.
+
+**Output Location:**
+
+All reports are saved to `results/` directory with timestamped filenames:
+- `training_{label_type}_{model}_{symbol}_{timeframe}_{timestamp}.html`
+- `{split_type}_{model}_{symbol}_{timeframe}_{timestamp}.html`
+- `ensemble_{symbol}_{timeframe}_{timestamp}.html`
 
 ---
 

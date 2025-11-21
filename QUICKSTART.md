@@ -50,6 +50,11 @@ python scripts/train_first_model.py
 
 **Time:** ~5 minutes on CPU
 
+**Output:** Interactive HTML reports in `results/` with:
+- Candlestick charts with color-coded labels
+- Model predictions and probabilities
+- Performance metrics tables
+
 ---
 
 ### Option 2: Three-Model Ensemble (Recommended) 🎯
@@ -72,6 +77,12 @@ python scripts/train_ensemble_models.py
 - Usage examples
 
 **Time:** ~15 minutes on CPU
+
+**Output:** Interactive HTML reports in `results/` with:
+- Individual model training reports
+- Combined ensemble signals with confidence
+- Candlestick charts with BUY/SELL signals
+- Model agreement analysis
 
 ---
 
@@ -251,6 +262,50 @@ combiner.fit(val_probs_reversal, val_probs_continuation, val_probs_direction, va
 
 ---
 
+## Visualization Reports 📊
+
+### Interactive HTML Reports
+
+Every training run automatically generates interactive HTML reports in the `results/` folder:
+
+**Training Reports** - Show your training data with labels:
+- Interactive candlestick charts (zoom, pan, hover)
+- Color-coded label markers for each class
+- Rolling label distribution
+- Model metadata and parameters
+
+**Validation/Test Reports** - Show predictions vs. actual:
+- Candlesticks with correct (green ✓) and incorrect (red ✗) predictions
+- Confidence scores over time
+- Class probability distributions
+- Confusion matrices and metrics
+
+**Ensemble Reports** - Show combined signals:
+- BUY/SELL signal markers (size = confidence)
+- Individual model probability charts
+- Agreement analysis
+- Overall ensemble performance
+
+### View Reports
+
+```bash
+# After training, open in your browser:
+open results/training_reversal_MLP_SPY_1h_*.html
+open results/ensemble_SPY_1h_*.html
+```
+
+### Demo Visualization
+
+Want to see examples without training first?
+
+```bash
+python scripts/demo_visualization.py
+```
+
+Generates 6 example reports with synthetic data in `results/examples/`
+
+---
+
 ## Understanding the Output
 
 ### When You Train
@@ -278,6 +333,12 @@ Model 3 - Direction:
 Ensemble:
   Average Test Accuracy: 0.610
   Total Parameters: 370,368
+
+Reports saved to results/:
+  - training_reversal_Reversal_Model_SPY_1h_*.html
+  - training_continuation_Continuation_Model_SPY_1h_*.html
+  - training_direction_Direction_Model_SPY_1h_*.html
+  - ensemble_SPY_1h_*.html
 ```
 
 ### When You Generate Signals
