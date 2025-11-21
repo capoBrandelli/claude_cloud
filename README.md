@@ -1,6 +1,43 @@
-# Financial Market Sentiment Analyzer
+# Claude Cloud - Financial Applications Suite
 
+A collection of AI-powered financial analysis and trading applications.
+
+## Applications
+
+### 1. Financial Market Sentiment Analyzer
 A comprehensive Python application for collecting, analyzing, and visualizing financial market sentiment data across Forex, Commodities, Stocks, and ETF markets. The system compares sentiment from news sources with futures market positioning to identify alignment and divergence opportunities.
+
+**Status:** ✅ Active
+**Location:** `financial-sentiment-analyzer/`
+**Documentation:** [View README](financial-sentiment-analyzer/README.md)
+
+### 2. TradeAI - Neural Network Trading System
+Production-ready ensemble neural network system for identifying market reversals, trend continuations, and directional bias.
+
+**Status:** ✅ Production Ready
+**Location:** `tradeAI/`
+**Quick Start:** [View QUICKSTART.md](QUICKSTART.md)
+**Full Documentation:** [View README_TRADEAI.md](README_TRADEAI.md)
+
+**Key Features:**
+- Three-model ensemble (reversal, continuation, direction)
+- 40+ technical indicators
+- Systematic forward-looking bias prevention
+- Multiple signal combination strategies
+- Production-grade data handling
+
+**Train Models:**
+```bash
+# Single model (basic)
+python scripts/train_first_model.py
+
+# Three-model ensemble (recommended)
+python scripts/train_ensemble_models.py
+```
+
+---
+
+## Financial Market Sentiment Analyzer - Overview
 
 ## Features
 
@@ -26,19 +63,38 @@ A comprehensive Python application for collecting, analyzing, and visualizing fi
 - Source attribution and publication dates
 - Keywords and trend analysis
 
-## Project Structure
+## Repository Structure
 
 ```
-financial-sentiment-analyzer/
-├── main.py                    # Main application entry point
-├── database.py                # SQLite database schema and operations
-├── sentiment_analyzer.py      # News and futures sentiment analysis
-├── comparison_engine.py       # Sentiment comparison logic
-├── data_collectors.py         # Data collection modules
-├── dashboard.py               # Interactive Plotly Dash dashboard
-├── requirements.txt           # Python dependencies
-└── README.md                  # This file
+claude_cloud/
+├── financial-sentiment-analyzer/    # Financial Market Sentiment Analyzer App
+│   ├── main.py                      # Main application entry point
+│   ├── database.py                  # SQLite database schema and operations
+│   ├── sentiment_analyzer.py        # News and futures sentiment analysis
+│   ├── comparison_engine.py         # Sentiment comparison logic
+│   ├── data_collectors.py           # Data collection modules
+│   ├── dashboard.py                 # Interactive Plotly Dash dashboard
+│   └── requirements.txt             # Python dependencies
+├── tradeAI/                         # TradeAI Neural Network System ✅ PRODUCTION READY
+│   ├── data/                        # Multi-provider data collection
+│   ├── preprocessing/               # Data cleaning and normalization
+│   ├── features/                    # 40+ technical indicators
+│   ├── labeling/                    # Reversal/continuation/direction labelers
+│   ├── models/                      # Neural network architectures + ensemble
+│   ├── training/                    # Training pipeline
+│   └── utils/                       # Utilities + temporal validation
+├── scripts/                         # Executable training scripts
+│   ├── train_first_model.py        # Single model training
+│   └── train_ensemble_models.py    # Three-model ensemble training
+├── config/                          # YAML configurations
+├── README.md                        # This file (main repository README)
+├── QUICKSTART.md                    # TradeAI quick start guide
+└── README_TRADEAI.md                # TradeAI full documentation
 ```
+
+## Project Structure (Financial Sentiment Analyzer)
+
+Each application has its own self-contained folder with dedicated documentation.
 
 ## Installation
 
@@ -51,7 +107,7 @@ financial-sentiment-analyzer/
 1. Clone or download the repository:
 ```bash
 git clone <repository-url>
-cd claude_cloud
+cd claude_cloud/financial-sentiment-analyzer
 ```
 
 2. Install dependencies:
@@ -233,6 +289,8 @@ The current implementation uses mock data for demonstration. To integrate real A
 ### Adding New Symbols
 
 ```python
+import sys
+sys.path.append('financial-sentiment-analyzer')
 from database import Database
 
 db = Database()
@@ -249,6 +307,8 @@ db.add_market_symbol(
 The modular design allows easy customization:
 
 ```python
+import sys
+sys.path.append('financial-sentiment-analyzer')
 from sentiment_analyzer import NewsSentimentAnalyzer
 from comparison_engine import SentimentComparator
 
