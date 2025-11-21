@@ -11,12 +11,29 @@ A comprehensive Python application for collecting, analyzing, and visualizing fi
 **Location:** `financial-sentiment-analyzer/`
 **Documentation:** [View README](financial-sentiment-analyzer/README.md)
 
-### 2. TradeAI
-AI-powered trading application (Coming Soon)
+### 2. TradeAI - Neural Network Trading System
+Production-ready ensemble neural network system for identifying market reversals, trend continuations, and directional bias.
 
-**Status:** 🚧 Under Development
+**Status:** ✅ Production Ready
 **Location:** `tradeAI/`
-**Documentation:** [View README](tradeAI/README.md)
+**Quick Start:** [View QUICKSTART.md](QUICKSTART.md)
+**Full Documentation:** [View README_TRADEAI.md](README_TRADEAI.md)
+
+**Key Features:**
+- Three-model ensemble (reversal, continuation, direction)
+- 40+ technical indicators
+- Systematic forward-looking bias prevention
+- Multiple signal combination strategies
+- Production-grade data handling
+
+**Train Models:**
+```bash
+# Single model (basic)
+python scripts/train_first_model.py
+
+# Three-model ensemble (recommended)
+python scripts/train_ensemble_models.py
+```
 
 ---
 
@@ -57,13 +74,22 @@ claude_cloud/
 │   ├── comparison_engine.py         # Sentiment comparison logic
 │   ├── data_collectors.py           # Data collection modules
 │   ├── dashboard.py                 # Interactive Plotly Dash dashboard
-│   ├── example_usage.py             # Example usage script
 │   └── requirements.txt             # Python dependencies
-├── tradeAI/                         # TradeAI Application (Under Development)
-│   ├── README.md                    # TradeAI documentation
-│   └── requirements.txt             # Python dependencies
+├── tradeAI/                         # TradeAI Neural Network System ✅ PRODUCTION READY
+│   ├── data/                        # Multi-provider data collection
+│   ├── preprocessing/               # Data cleaning and normalization
+│   ├── features/                    # 40+ technical indicators
+│   ├── labeling/                    # Reversal/continuation/direction labelers
+│   ├── models/                      # Neural network architectures + ensemble
+│   ├── training/                    # Training pipeline
+│   └── utils/                       # Utilities + temporal validation
+├── scripts/                         # Executable training scripts
+│   ├── train_first_model.py        # Single model training
+│   └── train_ensemble_models.py    # Three-model ensemble training
+├── config/                          # YAML configurations
 ├── README.md                        # This file (main repository README)
-└── QUICKSTART.md                    # Quick start guide for Sentiment Analyzer
+├── QUICKSTART.md                    # TradeAI quick start guide
+└── README_TRADEAI.md                # TradeAI full documentation
 ```
 
 ## Project Structure (Financial Sentiment Analyzer)
